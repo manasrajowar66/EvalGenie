@@ -1,0 +1,50 @@
+*{
+  box-sizing: border-box;
+  margin: 0;
+  font-family: "Poppins", serif !important;
+}
+
+input, textarea, label{
+  font-family: "Poppins", serif !important;
+}
+
+#root{
+  width: 100%;
+  height: 100%;
+}
+
+body{
+  background-color: whitesmoke !important;
+}
+
+:root{
+  --main-body: #212121;
+  --drawer: #171717;
+  --primary-text: #ececec;
+}
+
+.ql-container{
+  height: calc(100% - 2.5rem) !important;
+  border-bottom-left-radius: 0.625rem !important;
+  border-bottom-right-radius: 0.625rem !important;
+}
+
+.ql-toolbar{
+  border-top-left-radius: 0.625rem !important;
+  border-top-right-radius: 0.625rem !important;
+}
+
+.error-message{
+  margin: 3px 14px 0;
+  font-size: 0.75rem;
+  color: #d32f2f;
+}
+
+code {
+  background-color: #f4f4f4;
+  color: #c7254e;
+  padding: 2px 4px;
+  font-size: 14px;
+  border-radius: 3px;
+  font-family: "Courier New", monospace;
+}
