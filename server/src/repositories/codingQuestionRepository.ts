@@ -28,7 +28,18 @@ export class CodingQuestionRepository {
               JOIN coding_question_tags cqt ON t.id = cqt.tag_id
               WHERE cqt.coding_question_id = cq.id
           ) AS tags,
-          JSON_ARRAY() AS "testCases"
+          (
+              SELECT JSON_ARRAYAGG(
+                  jsonb_build_object(
+                      'id', ctc.id,
+                      'input', ctc.input,
+                      'expected_output', ctc.expected_output,
+                      'is_sample', ctc.is_sample
+                  )
+              )
+              FROM coding_test_cases ctc
+              WHERE ctc.coding_question_id = cq.id
+          ) AS "testCases"
       FROM coding_questions cq
       WHERE cq.id = :codingQuestionId;
     `;

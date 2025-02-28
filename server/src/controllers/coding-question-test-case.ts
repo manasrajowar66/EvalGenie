@@ -16,7 +16,8 @@ export class CodingTestCaseController {
       // Validate Coding Question existence
       const codingQuestion = await CodingQuestion.findByPk(codingQuestionId);
       if (!codingQuestion) {
-        return res.status(404).json({ message: "Coding question not found." });
+        res.status(404).json({ message: "Coding question not found." });
+        return;
       }
 
     //   // Validate request body
@@ -53,7 +54,8 @@ export class CodingTestCaseController {
       });
 
       if (!deleted) {
-        return res.status(404).json({ message: "Test case not found." });
+        res.status(404).json({ message: "Test case not found." });
+        return;
       }
 
       res.status(200).json({ message: "Test case removed successfully!" });

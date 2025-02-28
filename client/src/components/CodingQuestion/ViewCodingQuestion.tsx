@@ -20,6 +20,8 @@ import DifficultyLevel from "../ui/DifficultyLevel";
 import { Edit2, PlusCircle, TrashIcon } from "lucide-react";
 import AddCodingQuestionTagForm from "./AddCodingQuestionTagForm";
 import { getTags } from "../../store/reducers/tag";
+import AddCodingTestCaseForm from "./AddCodingTestCaseForm";
+import CodingQuestionTestCases from "./CodingQuestionTestCases";
 
 const ViewCodingQuestion: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -31,6 +33,10 @@ const ViewCodingQuestion: React.FC = () => {
   const [
     isAddCodingQuestionTagDialogOpen,
     setIsAddCodingQuestionTagDialogOpen,
+  ] = useState(false);
+  const [
+    isAddCodingQuestionTestCaseDialogOpen,
+    setIsAddCodingQuestionTestCaseDialogOpen,
   ] = useState(false);
 
   useEffect(() => {
@@ -186,12 +192,22 @@ const ViewCodingQuestion: React.FC = () => {
               <header>
                 Test Cases:{" "}
                 <Tooltip title="Add Test Case">
-                  <IconButton onClick={() => {}}>
+                  <IconButton
+                    onClick={() =>
+                      setIsAddCodingQuestionTestCaseDialogOpen(true)
+                    }
+                  >
                     <PlusCircle size={18} />
                   </IconButton>
                 </Tooltip>
               </header>
               <div>
+                {codingQuestion.testCases &&
+                  codingQuestion.testCases.length && (
+                    <CodingQuestionTestCases
+                      testCases={codingQuestion.testCases}
+                    />
+                  )}
                 {codingQuestion.testCases?.length === 0 && (
                   <p className={styles["no-data"]}>No Test Cases added</p>
                 )}
@@ -209,6 +225,21 @@ const ViewCodingQuestion: React.FC = () => {
             setCodingQuestion({ ...codingQuestion, tags: data });
             setIsAddCodingQuestionTagDialogOpen(false);
           }}
+        />
+      )}
+      {isAddCodingQuestionTestCaseDialogOpen && codingQuestion && (
+        <AddCodingTestCaseForm
+          open={isAddCodingQuestionTestCaseDialogOpen}
+          onClose={() => setIsAddCodingQuestionTestCaseDialogOpen(false)}
+          onAdd={(data) => {
+            let { testCases } = codingQuestion;
+            if(!testCases){
+              testCases = [];
+            }
+            setCodingQuestion({ ...codingQuestion, testCases: [data, ...testCases] });
+            setIsAddCodingQuestionTestCaseDialogOpen(false);
+          }}
+          questionId={codingQuestion.id}
         />
       )}
     </>

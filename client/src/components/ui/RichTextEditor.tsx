@@ -10,6 +10,36 @@ type Props = {
   error?: string;
 };
 
+const modules = {
+  toolbar: [
+    [{ header: [1, 2, false] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["blockquote", "code-block"], // Enables code block
+    ["link", "image"],
+    [{ align: [] }],
+    [{ color: [] }, { background: [] }],
+    ["clean"],
+  ],
+};
+
+const formats = [
+  "header",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "list",
+  "bullet",
+  "blockquote",
+  "code-block", // Enables code formatting
+  "link",
+  "image",
+  "align",
+  "color",
+  "background",
+];
+
 const RichTextEditor: React.FC<Props> = ({
   value,
   onChange,
@@ -36,6 +66,8 @@ const RichTextEditor: React.FC<Props> = ({
           if (value === "<p><br></p>") onChange?.("");
           else onChange?.(value);
         }}
+        modules={modules}
+        formats={formats}
         style={{ height: "200px", borderRadius: "0.625rem" }}
       />
       {error && <p className="error-message">{error}</p>}

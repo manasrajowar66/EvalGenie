@@ -7,6 +7,7 @@ import {
   IPagination,
   ICodingQuestion,
   ICodingQuestionFormData,
+  ICodingTestCase,
 } from "../../types/common-types";
 import { RootState } from "../store";
 
@@ -146,6 +147,24 @@ export const deleteCodingQuestionTag = createAsyncThunk<
   try {
     dispatch(showGlobalLoader());
     const response = await axiosInstance.delete(`coding-question-tag/${body.id}`);
+    return response.data;
+  } catch (error) {
+    return Promise.reject(error);
+  } finally {
+    dispatch(hideGlobalLoader());
+  }
+});
+
+export const addCodingQuestionTestCase = createAsyncThunk<
+  void,
+  {
+    questionId: string;
+    data: ICodingTestCase
+  }
+>("codingQuestion/addCodingQuestionTestCase", async (body, { dispatch }) => {
+  try {
+    dispatch(showGlobalLoader());
+    const response = await axiosInstance.post(`coding-question-test-cases/${body.questionId}`, body.data);
     return response.data;
   } catch (error) {
     return Promise.reject(error);

@@ -94,7 +94,7 @@ CodingQuestion.belongsToMany(Tag, {
 
 CodingQuestion.belongsToMany(CodingTestCase, {
   through: CodingTestCase,
-  foreignKey: "question_id",
+  foreignKey: "coding_question_id",
   as: "testCases",
 });
 

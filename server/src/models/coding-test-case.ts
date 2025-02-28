@@ -4,7 +4,7 @@ import CodingQuestion from "./coding-question";
 
 class CodingTestCase extends Model {
   id!: string;
-  question_id!: string;
+  coding_question_id!: string;
   input!: string;
   expected_output!: string;
   is_sample!: boolean;
@@ -17,7 +17,7 @@ CodingTestCase.init(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    question_id: {
+    coding_question_id: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {
