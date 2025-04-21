@@ -11,17 +11,19 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { AppDispatch } from "../../store/store";
 import {
   deleteCodingQuestionTag,
+  generateBaseFunctions,
   getCodingQuestion,
 } from "../../store/reducers/coding-question";
-import { ICodingQuestion } from "../../types/common-types";
+import { IBaseFunction, ICodingQuestion } from "../../types/common-types";
 import styles from "./ViewCodingQuestion.module.scss";
 import DOMPurify from "dompurify";
 import DifficultyLevel from "../ui/DifficultyLevel";
-import { Edit2, PlusCircle, TrashIcon } from "lucide-react";
+import { Edit2, PlusCircle, Repeat, TrashIcon } from "lucide-react";
 import AddCodingQuestionTagForm from "./AddCodingQuestionTagForm";
 import { getTags } from "../../store/reducers/tag";
 import AddCodingTestCaseForm from "./AddCodingTestCaseForm";
 import CodingQuestionTestCases from "./CodingQuestionTestCases";
+import BaseFunctionsList from "./BaseFunctionsList";
 
 const ViewCodingQuestion: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -75,6 +77,25 @@ const ViewCodingQuestion: React.FC = () => {
         setCodingQuestion({
           ...codingQuestion,
           tags: codingQuestion.tags.filter((tag) => tag.cqt_id !== cqt_id),
+        });
+      }
+    }
+  };
+
+  const onGenerateBaseFunctions = async () => {
+    const responseData = await dispatch(
+      generateBaseFunctions({ questionId: codingQuestion?.id || "" })
+    );
+
+    if (responseData && responseData.meta.requestStatus === "fulfilled") {
+      const data = responseData.payload as {
+        success: boolean;
+        baseFunctions: IBaseFunction[];
+      };
+      if (data && data.success && codingQuestion) {
+        setCodingQuestion({
+          ...codingQuestion,
+          baseFunctions: data.baseFunctions,
         });
       }
     }
@@ -213,6 +234,40 @@ const ViewCodingQuestion: React.FC = () => {
                 )}
               </div>
             </div>
+            <div>
+              <header>
+                Base Functions:{" "}
+                <Tooltip
+                  title={`${
+                    codingQuestion.baseFunctions?.length
+                      ? "Regenerate Base Functions"
+                      : "Generate Base Functions"
+                  }`}
+                >
+                  <IconButton onClick={() => onGenerateBaseFunctions()}>
+                    {codingQuestion.baseFunctions?.length ? (
+                      <Repeat size={18} />
+                    ) : (
+                      <PlusCircle size={18} />
+                    )}
+                  </IconButton>
+                </Tooltip>
+              </header>
+              {codingQuestion &&
+                codingQuestion.baseFunctions &&
+                codingQuestion.baseFunctions.length > 0 && (
+                  <BaseFunctionsList
+                    baseFunctions={codingQuestion.baseFunctions}
+                  />
+                )}
+              {codingQuestion && codingQuestion.baseFunctions?.length === 0 && (
+                <div className="flex flex-col items-center justify-center my-[2rem] gap-[1rem]">
+                  <p className={`${styles["no-data"]} text-center`}>
+                    No Base Functions added
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -233,10 +288,13 @@ const ViewCodingQuestion: React.FC = () => {
           onClose={() => setIsAddCodingQuestionTestCaseDialogOpen(false)}
           onAdd={(data) => {
             let { testCases } = codingQuestion;
-            if(!testCases){
+            if (!testCases) {
               testCases = [];
             }
-            setCodingQuestion({ ...codingQuestion, testCases: [data, ...testCases] });
+            setCodingQuestion({
+              ...codingQuestion,
+              testCases: [data, ...testCases],
+            });
             setIsAddCodingQuestionTestCaseDialogOpen(false);
           }}
           questionId={codingQuestion.id}

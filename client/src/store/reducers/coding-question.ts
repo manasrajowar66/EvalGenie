@@ -173,6 +173,23 @@ export const addCodingQuestionTestCase = createAsyncThunk<
   }
 });
 
+export const generateBaseFunctions = createAsyncThunk<
+  void,
+  {
+    questionId: string;
+  }
+>("codingQuestion/generateBaseFunctions", async (body, { dispatch }) => {
+  try {
+    dispatch(showGlobalLoader());
+    const response = await axiosInstance.get(`base-functions/${body.questionId}`);
+    return response.data;
+  } catch (error) {
+    return Promise.reject(error);
+  } finally {
+    dispatch(hideGlobalLoader());
+  }
+});
+
 const codingQuestionSlice = createSlice({
   name: "codingQuestion",
   initialState,

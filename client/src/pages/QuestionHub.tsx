@@ -5,7 +5,7 @@ import CodingQuestion from "../components/CodingQuestion/CodingQuestion";
 
 const QuestionHub: React.FC = () => {
   return (
-    <div className={styles["main-container"]}>
+    <div className={`${styles["main-container"]} w-full`}>
       <div role="presentation">
         <Breadcrumbs aria-label="breadcrumb">
           <Typography>EvalGenie</Typography>

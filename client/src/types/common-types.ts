@@ -36,10 +36,18 @@ export type ICodingQuestion = {
   constraints: string;
   tags: ICodingQuestionTag[];
   testCases?: ICodingTestCase[];
+  baseFunctions?: IBaseFunction[];
   created_by: string;
   createdAt: string;
   updatedAt: string;
 };
+
+export type IBaseFunction = {
+  id: string;
+  question_id: string;
+  language: string;
+  base: string;
+}
 
 export type ICodingTestCase = {
   id: string;

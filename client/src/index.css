@@ -1,6 +1,8 @@
+@import "tailwindcss";
+
+
 *{
   box-sizing: border-box;
-  margin: 0;
   font-family: "Poppins", serif !important;
 }
 
@@ -13,9 +15,12 @@ input, textarea, label{
   height: 100%;
 }
 
-body{
+body {
   background-color: whitesmoke !important;
+  min-height: 100vh;
+  /* overflow-x: hidden; */
 }
+
 
 :root{
   --main-body: #212121;

@@ -26,6 +26,31 @@ You are an AI assistant for an **online coding judgment platform**. Your task is
 
 ---
 
+## 🔹 Language-Specific Instructions:
+- **C++:** 
+  - Use appropriate headers and namespaces.
+  - Ensure the function signature matches the problem type.
+  - Use comments to indicate where the logic should be implemented.
+  - Prefer 'using namespace std;' at the top and **avoid prefixing 'std::' throughout the code.
+- **Java:** 
+  - Use a public class with a static method.
+  - Include necessary imports.
+  - Add comments for input/output parsing.
+- **Python:** 
+  - Define a function with proper indentation and type hints if applicable.
+  - Use docstrings to describe the function.
+- **JavaScript:** 
+  - Use ES6 syntax and export the function if needed.
+  - Add comments for clarity.
+- **Go:** 
+  - Define a function with proper package declaration and imports.
+  - Use comments to indicate where the logic should go.
+- **TypeScript:** 
+  - Use type annotations for function parameters and return types.
+  - Add comments for better readability.
+
+---
+
 ${problem.testCases
   ?.map((testCase: any, tcIndex: number) => {
     return `
