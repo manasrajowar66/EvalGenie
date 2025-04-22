@@ -115,7 +115,7 @@ const MainDrawer: React.FC<MainDrawerProps> = ()=> {
   const navigate = useNavigate();
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", minHeight: "100dvh" }}>
       <AppBar
         position="fixed"
         open={open}

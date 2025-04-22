@@ -17,8 +17,10 @@ import { addCodingQuestionTestCase } from "../../store/reducers/coding-question"
 
 type Props = {
   open: boolean;
+  testCaseData?: ICodingTestCase | null;
   onClose?: () => void;
   onAdd?: (data: ICodingTestCase) => void;
+  onUpdate?: (data: ICodingTestCase) => void;
   questionId: string;
 };
 
@@ -35,7 +37,7 @@ const validationSchema = Yup.object({
 });
 
 const AddCodingTestCaseForm: React.FC<Props> = (props) => {
-  const { open, onClose, onAdd, questionId } = props;
+  const { open, onClose, onAdd, questionId, testCaseData, onUpdate } = props;
   const {
     handleSubmit,
     control,
@@ -53,6 +55,14 @@ const AddCodingTestCaseForm: React.FC<Props> = (props) => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (body: any) => {
+    if (testCaseData) {
+      onUpdate?.(body);
+    } else {
+      onAddTestCase(body);
+    }
+  };
+
+  const onAddTestCase = async (body: ICodingTestCase) => {
     const responseData = await dispatch(
       addCodingQuestionTestCase({
         questionId,

@@ -14,6 +14,8 @@ import { ICodingTestCase } from "../../types/common-types";
 
 type Props = {
   testCases: ICodingTestCase[];
+  onDeleteTestCase: (id: string) => void;
+  onUpdateTestCase: (data: ICodingTestCase) => void;
 };
 
 const CodingQuestionTestCases: React.FC<Props> = (props) => {
@@ -47,11 +49,16 @@ const CodingQuestionTestCases: React.FC<Props> = (props) => {
               <TableCell sx={{ width: "15%" }}>
                 <IconButton
                   sx={{ "&:hover": { color: "blue" } }}
-                  onClick={() => {}}
+                  onClick={() => {
+                    props.onUpdateTestCase(testCase);
+                  }}
                 >
                   <Edit2 size={18} />
                 </IconButton>
-                <IconButton sx={{ "&:hover": { color: "red" } }}>
+                <IconButton
+                  onClick={() => props.onDeleteTestCase(testCase.id)}
+                  sx={{ "&:hover": { color: "red" } }}
+                >
                   <Trash size={18} />
                 </IconButton>
               </TableCell>

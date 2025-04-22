@@ -13,7 +13,7 @@ export class BaseFunctionController {
       // Validate Coding Question existence
       const codingQuestion =
         await CodingQuestionRepository.getCodingQuestionById(codingQuestionId);
-      if (!codingQuestion || codingQuestion.length === 0) {
+      if (!codingQuestion) {
         res.status(404).json({ message: "Coding question not found." });
         return;
       }
@@ -21,7 +21,7 @@ export class BaseFunctionController {
       const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
       const model = genAI.getGenerativeModel({
         model: "gemini-2.0-flash",
-        systemInstruction: Generate_Base_Functions(codingQuestion[0]),
+        systemInstruction: Generate_Base_Functions(codingQuestion),
         generationConfig: {
           responseMimeType: "application/json",
         },

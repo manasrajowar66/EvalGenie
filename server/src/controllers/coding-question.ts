@@ -144,12 +144,12 @@ export class CodingQuestionController {
     try {
       const { id } = req.params;
       const question = await CodingQuestionRepository.getCodingQuestionById(id);
-      if (!question || question.length === 0) {
+      if (!question) {
         res.status(404).json({ message: "Coding question not found!" });
         return;
       }
 
-      res.status(200).json({ data: question[0] });
+      res.status(200).json({ data: question });
     } catch (error: any) {
       res.status(500).json({
         message: "Error fetching coding questions",

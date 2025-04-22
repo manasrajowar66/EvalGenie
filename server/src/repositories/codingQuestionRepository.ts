@@ -1,123 +1,81 @@
 import { sequelize } from "../config/database";
 import { QueryTypes } from "sequelize";
 
-const allTestCaseQuery = `
-    SELECT 
-        cq.id,
-        cq.title,
-        cq.description,
-        cq.input_format,
-        cq.output_format,
-        cq.time_limit_milliseconds,
-        cq.difficulty_level,
-        cq.constraints,
-        cq.created_by,
-        cq."createdAt",
-        cq."updatedAt",
-        (
-          SELECT COALESCE(JSON_ARRAYAGG(
-            jsonb_build_object(
-                'id', t.id,
-                'name', t.name,
-                'cqt_id', cqt.id
-            )
-          ), '[]'::jsonb)
-          FROM tags t
-          JOIN coding_question_tags cqt ON t.id = cqt.tag_id
-          WHERE cqt.coding_question_id = cq.id
-        ) AS tags,
-        (
-          SELECT COALESCE(JSON_ARRAYAGG(
-            jsonb_build_object(
-                'id', ctc.id,
-                'input', ctc.input,
-                'expected_output', ctc.expected_output,
-                'is_sample', ctc.is_sample
-            )
-          ), '[]'::jsonb)
-          FROM coding_test_cases ctc
-          WHERE ctc.coding_question_id = cq.id
-        ) AS "testCases",
-        (
-          SELECT COALESCE(JSON_ARRAYAGG(
-            jsonb_build_object(
-              'id', bfs.id,
-              'question_id', bfs.question_id,
-              'language', bfs.language,
-              'base', bfs.base
-            )
-          ), '[]'::jsonb)
-          FROM base_functions bfs
-          WHERE bfs.question_id = cq.id
-        ) AS "baseFunctions"
-    FROM coding_questions cq
-    WHERE cq.id = :codingQuestionId;
-    `;
-
-const sampleTestCaseQuery = `
-    SELECT 
-        cq.id,
-        cq.title,
-        cq.description,
-        cq.input_format,
-        cq.output_format,
-        cq.time_limit_milliseconds,
-        cq.difficulty_level,
-        cq.constraints,
-        cq.created_by,
-        cq."createdAt",
-        cq."updatedAt",
-        (
-            SELECT COALESCE(JSON_ARRAYAGG(
-                jsonb_build_object(
-                    'id', t.id,
-                    'name', t.name,
-                    'cqt_id', cqt.id
-                )
-            ), '[]'::jsonb)
-            FROM tags t
-            JOIN coding_question_tags cqt ON t.id = cqt.tag_id
-            WHERE cqt.coding_question_id = cq.id
-        ) AS tags,
-        (
-            SELECT COALESCE(JSON_ARRAYAGG(
-                jsonb_build_object(
-                    'id', ctc.id,
-                    'input', ctc.input,
-                    'expected_output', ctc.expected_output,
-                    'is_sample', ctc.is_sample
-                )
-            ), '[]'::jsonb)
-            FROM coding_test_cases ctc
-            WHERE ctc.coding_question_id = cq.id and ctc.is_sample = true
-        ) AS "testCases",
-        (
-            SELECT COALESCE(JSON_ARRAYAGG(
-                jsonb_build_object(
-                    'id', bfs.id,
-                    'question_id', bfs.question_id,
-                    'language', bfs.language,
-                    'base', bfs.base
-                )
-            ), '[]'::jsonb)
-            FROM base_functions bfs
-            WHERE bfs.question_id = cq.id
-        ) AS "baseFunctions"
-    FROM coding_questions cq
-    WHERE cq.id = :codingQuestionId;
-  `;
+type CodingQuestion = Record<string, any>;
 
 export class CodingQuestionRepository {
-  static async getCodingQuestionById(id: string, sampleTestCase?: boolean) {
-    let query = allTestCaseQuery;
+  static async getCodingQuestionById(id: string, sampleTestCase = false) {
+    const codingQuestion = await this.fetchCodingQuestion(id);
+    if (!codingQuestion) return null;
 
-    if (sampleTestCase) {
-      query = sampleTestCaseQuery;
-    }
+    const [tags, testCases, baseFunctions] = await Promise.all([
+      this.fetchTags(id),
+      this.fetchTestCases(id, sampleTestCase),
+      this.fetchBaseFunctions(id),
+    ]);
 
-    return await sequelize.query(query, {
-      replacements: { codingQuestionId: id },
-      type: QueryTypes.SELECT,
-    });
+    return {
+      ...codingQuestion,
+      tags,
+      testCases,
+      baseFunctions,
+    };
+  }
+
+  private static async fetchCodingQuestion(id: string): Promise<CodingQuestion | null> {
+    const result = await sequelize.query(
+      `SELECT * FROM coding_questions WHERE id = :codingQuestionId`,
+      {
+        replacements: { codingQuestionId: id },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    return result[0] ?? null;
+  }
+
+  private static async fetchTags(id: string) {
+    return await sequelize.query(
+      `
+        SELECT t.id, t.name, cqt.id AS cqt_id
+        FROM tags t
+        JOIN coding_question_tags cqt ON t.id = cqt.tag_id
+        WHERE cqt.coding_question_id = :codingQuestionId
+      `,
+      {
+        replacements: { codingQuestionId: id },
+        type: QueryTypes.SELECT,
+      }
+    );
+  }
+
+  private static async fetchTestCases(id: string, onlySample = false) {
+    const whereClause = onlySample ? "AND is_sample = true" : "";
+
+    return await sequelize.query(
+      `
+        SELECT id, input, expected_output, is_sample
+        FROM coding_test_cases
+        WHERE coding_question_id = :codingQuestionId ${whereClause}
+      `,
+      {
+        replacements: { codingQuestionId: id },
+        type: QueryTypes.SELECT,
+      }
+    );
+  }
+
+  private static async fetchBaseFunctions(id: string) {
+    return await sequelize.query(
+      `
+        SELECT id, question_id, language, base
+        FROM base_functions
+        WHERE question_id = :codingQuestionId
+      `,
+      {
+        replacements: { codingQuestionId: id },
+        type: QueryTypes.SELECT,
+      }
+    );
   }
 }

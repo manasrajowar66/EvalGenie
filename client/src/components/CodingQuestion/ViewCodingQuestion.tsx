@@ -11,19 +11,26 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { AppDispatch } from "../../store/store";
 import {
   deleteCodingQuestionTag,
+  deleteCodingQuestionTestCase,
+  editCodingQuestionTestCase,
   generateBaseFunctions,
   getCodingQuestion,
 } from "../../store/reducers/coding-question";
-import { IBaseFunction, ICodingQuestion } from "../../types/common-types";
+import {
+  IBaseFunction,
+  ICodingQuestion,
+  ICodingTestCase,
+} from "../../types/common-types";
 import styles from "./ViewCodingQuestion.module.scss";
 import DOMPurify from "dompurify";
 import DifficultyLevel from "../ui/DifficultyLevel";
-import { Edit2, PlusCircle, Repeat, TrashIcon } from "lucide-react";
+import { Code, Edit2, PlusCircle, Repeat, TrashIcon } from "lucide-react";
 import AddCodingQuestionTagForm from "./AddCodingQuestionTagForm";
 import { getTags } from "../../store/reducers/tag";
 import AddCodingTestCaseForm from "./AddCodingTestCaseForm";
 import CodingQuestionTestCases from "./CodingQuestionTestCases";
 import BaseFunctionsList from "./BaseFunctionsList";
+import ConfirmationDialog, { ConfirmationDialogProps } from "../ui/ConfirmationDialog";
 
 const ViewCodingQuestion: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -40,6 +47,12 @@ const ViewCodingQuestion: React.FC = () => {
     isAddCodingQuestionTestCaseDialogOpen,
     setIsAddCodingQuestionTestCaseDialogOpen,
   ] = useState(false);
+
+  const [updateCodingQuestionTestCaseData, setUpdateCodingQuestionTestCaseData] = useState<
+    ICodingTestCase | null
+  >(null);
+
+  const [confirmationDialogData, setConfirmationDialogData] = useState<ConfirmationDialogProps | null>(null);
 
   useEffect(() => {
     const { id } = params;
@@ -101,6 +114,57 @@ const ViewCodingQuestion: React.FC = () => {
     }
   };
 
+  const goToCodeRunnerPage = (id: string) => {
+    navigate(`/recruiter/question-hub/coding-question/${id}/code-runner`);
+  };
+
+  const deleteCodingQuestionTestCaseHandler = async (id: string) => {
+    const responseData = await dispatch(deleteCodingQuestionTestCase({ id }));
+    if (responseData && responseData.meta.requestStatus === "fulfilled") {
+      if (codingQuestion) {
+        setCodingQuestion({
+          ...codingQuestion,
+          testCases: codingQuestion.testCases?.filter(
+            (testCase) => testCase.id !== id
+          ),
+        });
+      }
+    }
+  };
+
+  const onDeleteCodingQuestionTestCase = async (id: string) => {
+    setConfirmationDialogData({
+      open: true,
+      heading: "Are you sure?",
+      message: "Are you sure you want to delete this test case?",
+      onAccept: () => deleteCodingQuestionTestCaseHandler(id),
+      onReject: () => setConfirmationDialogData(null),
+    });
+  };
+
+  const updateCodingQuestionTestCaseHandler = async (data: ICodingTestCase) => {
+    const responseData = await dispatch(
+      editCodingQuestionTestCase({ id: data.id, data })
+    );
+    if (responseData && responseData.meta.requestStatus === "fulfilled") {
+      const { data: updatedTestCase } = responseData.payload as {
+        data: ICodingTestCase;
+      };
+      if (codingQuestion && updatedTestCase) {
+        setCodingQuestion({
+          ...codingQuestion,
+          testCases: codingQuestion.testCases?.map((testCase) =>
+            testCase.id === updatedTestCase.id ? updatedTestCase : testCase
+          ),
+        });
+      }
+    }
+  };
+
+  const onUpdateCodingQuestionTestCase = async (data: ICodingTestCase) => {
+    setUpdateCodingQuestionTestCaseData(data);
+    setIsAddCodingQuestionTestCaseDialogOpen(true);
+  };
   return (
     <>
       {codingQuestion && (
@@ -134,6 +198,13 @@ const ViewCodingQuestion: React.FC = () => {
                 <Tooltip title="Delete Question">
                   <IconButton>
                     <TrashIcon size={16} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Run Code">
+                  <IconButton
+                    onClick={() => goToCodeRunnerPage(codingQuestion.id)}
+                  >
+                    <Code size={16} />
                   </IconButton>
                 </Tooltip>
               </div>
@@ -226,6 +297,8 @@ const ViewCodingQuestion: React.FC = () => {
                 {codingQuestion.testCases &&
                   codingQuestion.testCases.length && (
                     <CodingQuestionTestCases
+                      onDeleteTestCase={onDeleteCodingQuestionTestCase}
+                      onUpdateTestCase={onUpdateCodingQuestionTestCase}
                       testCases={codingQuestion.testCases}
                     />
                   )}
@@ -297,9 +370,27 @@ const ViewCodingQuestion: React.FC = () => {
             });
             setIsAddCodingQuestionTestCaseDialogOpen(false);
           }}
+          testCaseData={updateCodingQuestionTestCaseData}
+          onUpdate={updateCodingQuestionTestCaseHandler}
           questionId={codingQuestion.id}
         />
       )}
+      {
+        confirmationDialogData && (
+          <ConfirmationDialog
+            open={!!confirmationDialogData}
+            heading={confirmationDialogData.heading}
+            message={confirmationDialogData.message}
+            onAccept={() => {
+              if (confirmationDialogData) {
+                confirmationDialogData.onAccept?.();
+              }
+              setConfirmationDialogData(null);
+            }}
+            onReject={() => confirmationDialogData?.onReject?.()}
+          />
+        )
+      }
     </>
   );
 };

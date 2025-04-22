@@ -122,14 +122,17 @@ export const addCodingQuestionTag = createAsyncThunk<
   void,
   {
     questionId: string;
-    data:{
+    data: {
       tags: string[];
-    }
+    };
   }
 >("codingQuestion/addCodingQuestionTag", async (body, { dispatch }) => {
   try {
     dispatch(showGlobalLoader());
-    const response = await axiosInstance.post(`coding-question-tag/${body.questionId}`, body.data);
+    const response = await axiosInstance.post(
+      `coding-question-tag/${body.questionId}`,
+      body.data
+    );
     return response.data;
   } catch (error) {
     return Promise.reject(error);
@@ -141,12 +144,14 @@ export const addCodingQuestionTag = createAsyncThunk<
 export const deleteCodingQuestionTag = createAsyncThunk<
   void,
   {
-    id: string
+    id: string;
   }
 >("codingQuestion/deleteCodingQuestionTag", async (body, { dispatch }) => {
   try {
     dispatch(showGlobalLoader());
-    const response = await axiosInstance.delete(`coding-question-tag/${body.id}`);
+    const response = await axiosInstance.delete(
+      `coding-question-tag/${body.id}`
+    );
     return response.data;
   } catch (error) {
     return Promise.reject(error);
@@ -159,12 +164,55 @@ export const addCodingQuestionTestCase = createAsyncThunk<
   void,
   {
     questionId: string;
-    data: ICodingTestCase
+    data: ICodingTestCase;
   }
 >("codingQuestion/addCodingQuestionTestCase", async (body, { dispatch }) => {
   try {
     dispatch(showGlobalLoader());
-    const response = await axiosInstance.post(`coding-question-test-cases/${body.questionId}`, body.data);
+    const response = await axiosInstance.post(
+      `coding-question-test-cases/${body.questionId}`,
+      body.data
+    );
+    return response.data;
+  } catch (error) {
+    return Promise.reject(error);
+  } finally {
+    dispatch(hideGlobalLoader());
+  }
+});
+
+export const deleteCodingQuestionTestCase = createAsyncThunk<
+  void,
+  {
+    id: string;
+  }
+>("codingQuestion/deleteCodingQuestionTestCase", async (body, { dispatch }) => {
+  try {
+    dispatch(showGlobalLoader());
+    const response = await axiosInstance.delete(
+      `coding-question-test-cases/${body.id}`
+    );
+    return response.data;
+  } catch (error) {
+    return Promise.reject(error);
+  } finally {
+    dispatch(hideGlobalLoader());
+  }
+});
+
+export const editCodingQuestionTestCase = createAsyncThunk<
+  void,
+  {
+    id: string;
+    data: ICodingTestCase;
+  }
+>("codingQuestion/editCodingQuestionTestCase", async (body, { dispatch }) => {
+  try {
+    dispatch(showGlobalLoader());
+    const response = await axiosInstance.put(
+      `coding-question-test-cases/${body.id}`,
+      body.data
+    );
     return response.data;
   } catch (error) {
     return Promise.reject(error);
@@ -181,7 +229,9 @@ export const generateBaseFunctions = createAsyncThunk<
 >("codingQuestion/generateBaseFunctions", async (body, { dispatch }) => {
   try {
     dispatch(showGlobalLoader());
-    const response = await axiosInstance.get(`base-functions/${body.questionId}`);
+    const response = await axiosInstance.get(
+      `base-functions/${body.questionId}`
+    );
     return response.data;
   } catch (error) {
     return Promise.reject(error);
