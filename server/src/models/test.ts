@@ -8,7 +8,7 @@ class Test extends Model {
   description!: string;
   date!: Date;
   duration!: number;
-  end_time!: Date;
+  end_date!: Date;
   recruitment_drive_id!: string;
   is_active!: boolean;
   is_allow_registration!: boolean;
@@ -37,7 +37,7 @@ Test.init(
       type: DataTypes.INTEGER, // Duration in seconds
       allowNull: false,
     },
-    end_time: {
+    end_date: {
       type: DataTypes.DATE,
       allowNull: false, // End time of the test
     },

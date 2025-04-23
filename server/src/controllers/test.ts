@@ -7,7 +7,7 @@ export class TestController {
   // Create a new test for a recruitment drive
   static async createTest(req: Request, res: Response) {
     try {
-      const { name, description, date, end_time, duration, recruitment_drive_id } = req.body;
+      const { name, description, date, end_date, duration, recruitment_drive_id } = req.body;
 
       // Check if the recruitment drive exists
       const drive = await RecruitmentDrive.findByPk(recruitment_drive_id);
@@ -23,7 +23,7 @@ export class TestController {
         date,
         duration: duration * 60,
         recruitment_drive_id,
-        end_time
+        end_date
       });
 
       res.status(201).json({ message: 'Test created successfully!', data: newTest });
@@ -57,7 +57,7 @@ export class TestController {
   static async updateTest(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { name, description, date, end_time, duration } = req.body;
+      const { name, description, date, end_date, duration } = req.body;
 
       const test = await Test.findByPk(id);
       if (!test) {
@@ -68,7 +68,7 @@ export class TestController {
       test.name = name || test.name;
       test.description = description || test.description;
       test.date = date || test.date;
-      test.end_time = end_time || test.end_time;
+      test.end_date = end_date || test.end_date;
       test.duration = duration ? duration * 60 : test.duration;
 
       await test.save();

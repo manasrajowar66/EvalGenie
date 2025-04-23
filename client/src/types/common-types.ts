@@ -98,4 +98,16 @@ export type ISubmission = {
   is_sample: boolean;
 };
 
+export type ITest = {
+  id: string;
+  name: string;
+  description: string;
+  date: Date;
+  duration: number;
+  end_time: Date;
+  recruitment_drive_id: string;
+  is_active: boolean;
+  is_allow_registration: boolean;
+}
+
 export type Role = "admin" | "student";

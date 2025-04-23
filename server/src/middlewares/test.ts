@@ -14,7 +14,7 @@ export const checkTestExpiration = async (req: Request, res: Response, next: Nex
 
     // Compare current date and time with the test end time
     const currentTime = new Date();
-    const endTime = new Date(test.end_time); // End time of the test
+    const endTime = new Date(test.end_date); // End time of the test
 
     if (currentTime > endTime) {
       res.status(400).json({ message: 'Test time has expired. You can no longer take the test.' });
