@@ -14,7 +14,7 @@ const AddQuestions: React.FC = () => {
 
   const questionArray = useFieldArray({
     control,
-    name: "question_list",
+    name: "coding_questions",
   });
 
   const onAddSection = (data: SectionFormValues) => {
