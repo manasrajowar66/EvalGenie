@@ -29,9 +29,8 @@ const NewSectionForm: React.FC<Props> = (props) => {
     watch,
     handleSubmit,
   } = useForm({
-    resolver: yupResolver(SectionSchema, {
-      context: { validateQuestionList: false },
-    }),
+    resolver: yupResolver(SectionSchema),
+    context: { validateQuestionList: false },
     defaultValues: {
       section_name: "",
       question_list: [],

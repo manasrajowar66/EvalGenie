@@ -75,6 +75,7 @@ const TestForm: React.FC = () => {
 
   const methods = useForm({
     resolver: yupResolver(testSchema),
+    context: { validateQuestionList: true },
     defaultValues: {
       name: "",
       description: "",
