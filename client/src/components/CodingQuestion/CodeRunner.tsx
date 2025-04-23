@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { getCodingQuestion } from "../../store/reducers/coding-question";
-import { ICodingQuestion } from "../../types/common-types";
+import { ICodingQuestion, ISubmission } from "../../types/common-types";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store/store";
 import MonacoCodeEditor from "./MonacoCodeEditor";
-import { Breadcrumbs, Typography } from "@mui/material";
+import { Breadcrumbs, Button, Typography } from "@mui/material";
 import CodingQuestionDetails from "./CodingQuestionDetails";
+import axiosInstance from "../../utils/axiosInstance";
+import CodeSubmissionResult from "./CodeSubmissionResult";
+import { hideGlobalLoader, showGlobalLoader } from "../../store/reducers/globalLoader";
 
 const CodeRunner: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -15,6 +18,11 @@ const CodeRunner: React.FC = () => {
   const [codingQuestion, setCodingQuestion] = useState<ICodingQuestion | null>(
     null
   );
+  const [codeSubmissionResult, setCodeSubmissionResult] =
+    useState<ISubmission[] | null>(null);
+
+  const [sourceCode, setSourceCode] = useState<string>("");
+  const [language, setLanguage] = useState<string>("");
 
   useEffect(() => {
     const { id } = params;
@@ -34,6 +42,31 @@ const CodeRunner: React.FC = () => {
       }
     })();
   }, [dispatch, params, navigate]);
+
+  const handleCodeRun = async () => {
+    if (!codingQuestion) return;
+    if (!sourceCode) {
+      alert("Please write some code before running it.");
+      return;
+    }
+    if (!language) {
+      alert("Please select a programming language.");
+      return;
+    }
+    dispatch(showGlobalLoader());
+    const response = await axiosInstance.post(
+      `/compiler/compile/${codingQuestion?.id}`,
+      {
+        source_code: sourceCode,
+        language: language,
+      }
+    );
+    if (response.status === 200) {
+      const { data } = response;
+      setCodeSubmissionResult(data.submissions);
+    }
+    dispatch(hideGlobalLoader());
+  };
   return (
     <>
       {codingQuestion && (
@@ -58,9 +91,38 @@ const CodeRunner: React.FC = () => {
               <CodingQuestionDetails codingQuestion={codingQuestion} />
             </div>
             <div className="col-span-1">
-              <MonacoCodeEditor className="h-[30rem] rounded-lg overflow-hidden" baseFunctions={codingQuestion.baseFunctions} />
+              <MonacoCodeEditor
+                className="h-[30rem] rounded-lg overflow-hidden"
+                baseFunctions={codingQuestion.baseFunctions}
+                onLanguageChange={(setLang) => {
+                  setLanguage(setLang);
+                }}
+                onCodeChange={(code) => {
+                  setSourceCode(code || "");
+                }}
+              />
+              <div className="flex mt-[1rem] justify-end">
+                <Button
+                  variant="contained"
+                  className="h-[2.5rem] rounded-lg text-[1rem] font-semibold"
+                  onClick={() => {
+                    // Handle code submission logic here
+                    handleCodeRun();
+                  }}
+                >
+                  Run Code
+                </Button>
+              </div>
             </div>
           </div>
+          {codeSubmissionResult && (
+            <div className="flex">
+              <CodeSubmissionResult
+                role="admin"
+                submissionResult={codeSubmissionResult}
+              />
+            </div>
+          )}
         </div>
       )}
     </>

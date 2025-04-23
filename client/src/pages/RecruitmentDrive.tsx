@@ -10,20 +10,23 @@ import {
   TableRow,
   Typography,
   Table,
+  Tooltip,
 } from "@mui/material";
 import React, { useEffect } from "react";
 import styles from "./RecruitmentDrive.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
-import { Edit, Trash } from "lucide-react";
+import { Edit, SquareArrowOutUpRight, Trash } from "lucide-react";
 import { getRecruitmentDrives } from "../store/reducers/recruitment-drive";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { ReverseDriveStatus } from "../types/common-enums";
 
 const RecruitmentDrive: React.FC = () => {
   const { recruitmentDrives } = useSelector(
     (state: RootState) => state.recruitmentDrive
   );
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(getRecruitmentDrives());
@@ -39,7 +42,9 @@ const RecruitmentDrive: React.FC = () => {
         </Breadcrumbs>
       </div>
       <div className={styles["header"]}>
-        <Button variant="contained">Create new drive</Button>
+        <Button variant="contained" onClick={() => navigate("create")}>
+          Create new drive
+        </Button>
       </div>
       <TableContainer component={Paper}>
         <Table>
@@ -56,18 +61,35 @@ const RecruitmentDrive: React.FC = () => {
             {recruitmentDrives.map((drive) => (
               <TableRow key={drive.id}>
                 <TableCell>
-                  <Link to={`/recruitment-drive/${drive.id}`}>{drive.name}</Link>
+                  <Link to={`/recruitment-drive/${drive.id}`}>
+                    {drive.name}
+                  </Link>
                 </TableCell>
                 <TableCell>{drive.institute_name}</TableCell>
                 <TableCell>{drive.session}</TableCell>
-                <TableCell>{drive.status}</TableCell>
+                <TableCell>{ReverseDriveStatus[drive.status]}</TableCell>
                 <TableCell>
-                  <IconButton sx={{ "&:hover": { color: "blue" } }}>
-                    <Edit />
-                  </IconButton>
-                  <IconButton sx={{ "&:hover": { color: "red" } }}>
-                    <Trash />
-                  </IconButton>
+                  <Tooltip title="Manage Drive">
+                    <IconButton
+                      sx={{ "&:hover": { color: "black" } }}
+                      onClick={() => navigate(`${drive.id}/tests`)}
+                    >
+                      <SquareArrowOutUpRight size={18} />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Edit Drive">
+                    <IconButton
+                      sx={{ "&:hover": { color: "blue" } }}
+                      onClick={() => navigate(`edit/${drive.id}`)}
+                    >
+                      <Edit size={18} />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Delete Drive">
+                    <IconButton sx={{ "&:hover": { color: "red" } }}>
+                      <Trash size={18} />
+                    </IconButton>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             ))}

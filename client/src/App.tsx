@@ -17,6 +17,8 @@ import QuestionHub from "./pages/QuestionHub";
 import CodingQuestionForm from "./pages/CodingQuestionForm";
 import ViewCodingQuestion from "./components/CodingQuestion/ViewCodingQuestion";
 import CodeRunner from "./components/CodingQuestion/CodeRunner";
+import RecruitmentDriveForm from "./pages/RecruitmentDriveForm";
+import ViewRecruitmentDrive from "./pages/ViewRecruitmentDrive";
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
@@ -44,6 +46,18 @@ function App() {
               <Route
                 path="/recruiter/recruitment-drive"
                 element={<RecruitmentDrive />}
+              />
+              <Route
+                path="/recruiter/recruitment-drive/create"
+                element={<RecruitmentDriveForm />}
+              />
+              <Route
+                path="/recruiter/recruitment-drive/edit/:id"
+                element={<RecruitmentDriveForm />}
+              />
+              <Route
+                path="/recruiter/recruitment-drive/:id/tests"
+                element={<ViewRecruitmentDrive />}
               />
               <Route
                 path="/recruiter/question-hub"

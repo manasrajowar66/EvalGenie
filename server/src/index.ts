@@ -29,7 +29,7 @@ app.use("/api", indexRouter);
 
 // Sync Database
 sequelize
-  .sync({ alter: true }) // Set to true if you want to reset the database
+  .sync({ alter: false }) // Set to true if you want to reset the database
   .then(() => {
     console.log("Database synced");
   })

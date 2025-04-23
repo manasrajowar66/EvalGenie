@@ -2,6 +2,12 @@ import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database"; // Make sure you import the sequelize instance
 import { randomBytes, createHmac } from "crypto";
 
+// User enumeration for user types
+export enum UserType {
+  ADMIN = "admin",
+  USER = "user"
+}
+
 // User Model class definition
 class User extends Model {
   id!: string;
@@ -9,6 +15,7 @@ class User extends Model {
   email!: string;
   password!: string;
   salt!: string;
+  role!: UserType;
 }
 
 // Define the User model
@@ -35,6 +42,12 @@ User.init(
     salt: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    role: {
+      values: Object.values(UserType),
+      type: DataTypes.ENUM,
+      allowNull: false,
+      defaultValue: UserType.USER,
     },
   },
   {

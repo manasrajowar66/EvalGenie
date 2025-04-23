@@ -41,17 +41,29 @@ const MonacoCodeEditor = ({
     onCodeChange?.(value);
   };
 
+  // Initial setup on first mount
   useEffect(() => {
-    if (baseFunctions) {
-      if (!language) setLanguage(baseFunctions[0].language);
+    if (baseFunctions?.length && !language) {
+      const initialLang = baseFunctions[0].language;
+      setLanguage(initialLang);
+      onLanguageChange?.(initialLang);
+      setCode(baseFunctions[0].base);
+      onCodeChange?.(baseFunctions[0].base);
+    }
+  }, []);
+
+  // Update code when language is changed explicitly
+  useEffect(() => {
+    if (baseFunctions && language) {
       const matchingFunction = baseFunctions.find(
         (baseFunction) => baseFunction.language === language
       );
       if (matchingFunction) {
         setCode(matchingFunction.base);
+        onCodeChange?.(matchingFunction.base);
       }
     }
-  }, [baseFunctions, language]);
+  }, [language]);
 
   return (
     <div className="flex flex-col gap-2">

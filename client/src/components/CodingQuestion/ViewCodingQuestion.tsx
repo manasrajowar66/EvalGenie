@@ -30,7 +30,9 @@ import { getTags } from "../../store/reducers/tag";
 import AddCodingTestCaseForm from "./AddCodingTestCaseForm";
 import CodingQuestionTestCases from "./CodingQuestionTestCases";
 import BaseFunctionsList from "./BaseFunctionsList";
-import ConfirmationDialog, { ConfirmationDialogProps } from "../ui/ConfirmationDialog";
+import ConfirmationDialog, {
+  ConfirmationDialogProps,
+} from "../ui/ConfirmationDialog";
 
 const ViewCodingQuestion: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -48,11 +50,13 @@ const ViewCodingQuestion: React.FC = () => {
     setIsAddCodingQuestionTestCaseDialogOpen,
   ] = useState(false);
 
-  const [updateCodingQuestionTestCaseData, setUpdateCodingQuestionTestCaseData] = useState<
-    ICodingTestCase | null
-  >(null);
+  const [
+    updateCodingQuestionTestCaseData,
+    setUpdateCodingQuestionTestCaseData,
+  ] = useState<ICodingTestCase | null>(null);
 
-  const [confirmationDialogData, setConfirmationDialogData] = useState<ConfirmationDialogProps | null>(null);
+  const [confirmationDialogData, setConfirmationDialogData] =
+    useState<ConfirmationDialogProps | null>(null);
 
   useEffect(() => {
     const { id } = params;
@@ -142,9 +146,19 @@ const ViewCodingQuestion: React.FC = () => {
     });
   };
 
+  const closeAddCodingQuestionTestCaseDialog = () => {
+    setIsAddCodingQuestionTestCaseDialogOpen(false);
+    setUpdateCodingQuestionTestCaseData(null);
+  };
+
   const updateCodingQuestionTestCaseHandler = async (data: ICodingTestCase) => {
+    if (updateCodingQuestionTestCaseData === null) return;
+
     const responseData = await dispatch(
-      editCodingQuestionTestCase({ id: data.id, data })
+      editCodingQuestionTestCase({
+        id: updateCodingQuestionTestCaseData.id,
+        data,
+      })
     );
     if (responseData && responseData.meta.requestStatus === "fulfilled") {
       const { data: updatedTestCase } = responseData.payload as {
@@ -158,6 +172,7 @@ const ViewCodingQuestion: React.FC = () => {
           ),
         });
       }
+      closeAddCodingQuestionTestCaseDialog();
     }
   };
 
@@ -295,7 +310,7 @@ const ViewCodingQuestion: React.FC = () => {
               </header>
               <div>
                 {codingQuestion.testCases &&
-                  codingQuestion.testCases.length && (
+                  codingQuestion.testCases.length > 0 && (
                     <CodingQuestionTestCases
                       onDeleteTestCase={onDeleteCodingQuestionTestCase}
                       onUpdateTestCase={onUpdateCodingQuestionTestCase}
@@ -303,7 +318,11 @@ const ViewCodingQuestion: React.FC = () => {
                     />
                   )}
                 {codingQuestion.testCases?.length === 0 && (
-                  <p className={styles["no-data"]}>No Test Cases added</p>
+                  <div className="flex flex-col items-center justify-center my-[2rem] gap-[1rem]">
+                    <p className={`${styles["no-data"]} text-center`}>
+                      No Test Cases added
+                    </p>
+                  </div>
                 )}
               </div>
             </div>
@@ -358,7 +377,9 @@ const ViewCodingQuestion: React.FC = () => {
       {isAddCodingQuestionTestCaseDialogOpen && codingQuestion && (
         <AddCodingTestCaseForm
           open={isAddCodingQuestionTestCaseDialogOpen}
-          onClose={() => setIsAddCodingQuestionTestCaseDialogOpen(false)}
+          onClose={() => {
+            closeAddCodingQuestionTestCaseDialog();
+          }}
           onAdd={(data) => {
             let { testCases } = codingQuestion;
             if (!testCases) {
@@ -375,22 +396,20 @@ const ViewCodingQuestion: React.FC = () => {
           questionId={codingQuestion.id}
         />
       )}
-      {
-        confirmationDialogData && (
-          <ConfirmationDialog
-            open={!!confirmationDialogData}
-            heading={confirmationDialogData.heading}
-            message={confirmationDialogData.message}
-            onAccept={() => {
-              if (confirmationDialogData) {
-                confirmationDialogData.onAccept?.();
-              }
-              setConfirmationDialogData(null);
-            }}
-            onReject={() => confirmationDialogData?.onReject?.()}
-          />
-        )
-      }
+      {confirmationDialogData && (
+        <ConfirmationDialog
+          open={!!confirmationDialogData}
+          heading={confirmationDialogData.heading}
+          message={confirmationDialogData.message}
+          onAccept={() => {
+            if (confirmationDialogData) {
+              confirmationDialogData.onAccept?.();
+            }
+            setConfirmationDialogData(null);
+          }}
+          onReject={() => confirmationDialogData?.onReject?.()}
+        />
+      )}
     </>
   );
 };

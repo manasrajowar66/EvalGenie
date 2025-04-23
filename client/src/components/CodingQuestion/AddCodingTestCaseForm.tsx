@@ -5,7 +5,7 @@ import {
   Switch,
   TextField,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./AddCodingTestCaseForm.module.scss";
 import * as Yup from "yup";
 import { Controller, useForm } from "react-hook-form";
@@ -42,6 +42,7 @@ const AddCodingTestCaseForm: React.FC<Props> = (props) => {
     handleSubmit,
     control,
     formState: { errors, isValid },
+    reset,
   } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues: {
@@ -52,6 +53,7 @@ const AddCodingTestCaseForm: React.FC<Props> = (props) => {
   });
 
   const dispatch = useDispatch<AppDispatch>();
+  const [editMode, setEditMode] = React.useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (body: any) => {
@@ -77,6 +79,23 @@ const AddCodingTestCaseForm: React.FC<Props> = (props) => {
     }
   };
 
+  useEffect(() => {
+    if (testCaseData) {
+      reset({
+        input: testCaseData.input,
+        expected_output: testCaseData.expected_output,
+        is_sample: testCaseData.is_sample,
+      });
+      setEditMode(true);
+    } else {
+      reset({
+        input: "",
+        expected_output: "",
+        is_sample: false,
+      });
+    }
+  }, [testCaseData, reset]);
+
   return (
     <>
       <Dialog
@@ -85,7 +104,9 @@ const AddCodingTestCaseForm: React.FC<Props> = (props) => {
         slotProps={{ paper: { style: { width: "90%", maxWidth: "30rem" } } }}
       >
         <div className={styles["add-test-case-container"]}>
-          <header>Add Test Case</header>
+          <header>
+            {editMode ? "Edit Test Case" : "Add Test Case"}
+          </header>
           <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
             <Controller
               name="input"
@@ -151,7 +172,7 @@ const AddCodingTestCaseForm: React.FC<Props> = (props) => {
               disabled={!isValid}
               variant="contained"
             >
-              Add
+              {editMode ? "Update" : "Add"}
             </Button>
           </form>
         </div>

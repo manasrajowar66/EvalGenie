@@ -48,11 +48,11 @@ export class CodingTestCaseController {
    * Delete a test case
    */
   static async deleteTestCase(req: Request, res: Response) {
-    const { id } = req.params;
+    const { codingQuestionId } = req.params;
 
     try {
       const deleted = await CodingTestCase.destroy({
-        where: { id },
+        where: { codingQuestionId },
       });
 
       if (!deleted) {
@@ -72,11 +72,11 @@ export class CodingTestCaseController {
    * Update a test case
    */
   static async updateTestCase(req: Request, res: Response) {
-    const { id } = req.params;
+    const { codingQuestionId } = req.params;
     const { input, expected_output, is_sample } = req.body;
 
     try {
-      const testCase = await CodingTestCase.findByPk(id);
+      const testCase = await CodingTestCase.findByPk(codingQuestionId);
       if (!testCase) {
         res.status(404).json({ message: "Test case not found." });
         return;

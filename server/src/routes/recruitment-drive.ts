@@ -9,3 +9,4 @@ router.post("/", validateRecruitmentDrive , RecruitmentDriveController.createRec
 router.put("/:id", validateRecruitmentDrive, RecruitmentDriveController.updateRecruitmentDrive); // Update an existing drive
 router.delete("/:id", RecruitmentDriveController.deleteRecruitmentDrive); // Delete a drive
 router.get("/", RecruitmentDriveController.getRecruitmentDrives); // Get all drives
+router.get("/:id", RecruitmentDriveController.getRecruitmentDriveById); // Get a drive by ID

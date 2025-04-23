@@ -49,7 +49,7 @@ export class UserController {
       }
 
       // Generate JWT token
-      const tokenData = _.pick(user, ["id", "email", "full_name"]);
+      const tokenData = _.pick(user, ["id", "email", "full_name", "role"]);
       const token = generateToken(tokenData);
 
       res.json({ message: "Login successful", token, user: tokenData });

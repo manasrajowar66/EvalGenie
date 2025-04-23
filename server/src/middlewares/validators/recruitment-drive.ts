@@ -4,7 +4,7 @@ import { body, validationResult } from "express-validator";
 export const validateRecruitmentDrive = [
   body("name").trim().notEmpty().withMessage("Name is required"),
   body("description").trim().notEmpty().withMessage("Description is required"),
-  body("instituteName")
+  body("institute_name")
     .trim()
     .notEmpty()
     .withMessage("Institute name is required"),

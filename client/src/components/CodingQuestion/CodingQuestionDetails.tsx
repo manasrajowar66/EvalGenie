@@ -26,7 +26,7 @@ const CodingQuestionDetails: React.FC<Props> = (props) => {
         style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
       >
         <header className="font-semibold">Title:</header>
-        <div>{codingQuestion.title}</div>
+        <div className="text-[0.875rem]">{codingQuestion.title}</div>
         {!hideActions && (
           <div>
             <Tooltip title="Edit Question">
@@ -63,6 +63,7 @@ const CodingQuestionDetails: React.FC<Props> = (props) => {
       <div className="flex flex-col">
         <header className="font-semibold">Description:</header>
         <div
+          className="code-content"
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(codingQuestion.description),
           }}
@@ -71,6 +72,7 @@ const CodingQuestionDetails: React.FC<Props> = (props) => {
       <div className="flex flex-col">
         <header className="font-semibold">Input Format:</header>
         <div
+          className="code-content"
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(codingQuestion.input_format),
           }}
@@ -79,6 +81,7 @@ const CodingQuestionDetails: React.FC<Props> = (props) => {
       <div className="flex flex-col">
         <header className="font-semibold">Output Format:</header>
         <div
+          className="code-content"
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(codingQuestion.output_format),
           }}
@@ -87,6 +90,7 @@ const CodingQuestionDetails: React.FC<Props> = (props) => {
       <div className="flex flex-col">
         <header className="font-semibold">Constraints:</header>
         <div
+          className="code-content"
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(codingQuestion.constraints),
           }}

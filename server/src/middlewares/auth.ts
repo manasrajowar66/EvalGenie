@@ -22,6 +22,33 @@ export const restrictToLoggedInUserOnly = (req: Request, res: Response, next: Ne
   }
 };
 
+export const restrictToRoles = (...allowedRoles: string[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const token = req.header("x-auth-token");
+    const jwtSecret = process.env.jwtSecret as string;
+
+    if (!token) {
+     res.status(401).json({ message: "No token, authorization denied" });
+     return;
+    }
+
+    try {
+      const decoded = jwt.verify(token, jwtSecret) as { role?: string };
+
+      if (!decoded.role || !allowedRoles.includes(decoded.role)) {
+        res.status(403).json({ message: "Access denied. Role not authorized." });
+        return;
+      }
+
+      req["user"] = decoded;
+      next();
+    } catch (error) {
+      res.status(401).json({ message: "Token is not valid." });
+      return;
+    }
+  };
+};
+
 export const checkAuth = (req: Request, res: Response, next: NextFunction) => {
   const token = req.header("x-auth-token");
   const jwtSecret = process.env.jwtSecret as string;

@@ -80,3 +80,22 @@ export type ICodingQuestionTag = {
   name: string;
   cqt_id: string;
 }
+
+export type ISubmission = {
+  stdout: string;
+  time: string;
+  memory: number;
+  stderr: string | null;
+  token: string;
+  compile_output: string | null;
+  message: string | null;
+  status: {
+      id: number;
+      description: string;
+  };
+  stdin: string | null;
+  expected_output: string | null;
+  is_sample: boolean;
+};
+
+export type Role = "admin" | "student";

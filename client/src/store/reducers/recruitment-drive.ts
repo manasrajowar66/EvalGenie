@@ -5,6 +5,7 @@ import axiosInstance, {
 } from "../../utils/axiosInstance";
 import { IRecruitmentDrive, IPagination } from "../../types/common-types";
 import { RootState } from "../store";
+import { RecruitmentDriveFormValues } from "../../pages/RecruitmentDriveForm";
 
 interface RecruitmentDriveState {
   loading: boolean;
@@ -18,22 +19,43 @@ const initialState: RecruitmentDriveState = {
   pagination: null,
 };
 
+export const getRecruitmentDrives = createAsyncThunk<void>(
+  "recruitmentDrive/getRecruitmentDrives",
+  async (_, { dispatch, getState }) => {
+    try {
+      dispatch(showGlobalLoader());
+      let query = "";
+      const { pagination } = (getState() as RootState).recruitmentDrive;
 
-export const getRecruitmentDrives = createAsyncThunk<
-  void
->("recruitmentDrive/getRecruitmentDrives", async (_, { dispatch, getState }) => {
+      if (pagination) {
+        query += `page=${pagination.page}&limit=${pagination.limit}`;
+      }
+      const response = await axiosInstance.get(`recruitment-drive?${query}`, {
+        showSuccessToast: false,
+      } as CustomAxiosRequestConfig);
+      dispatch(setRecruitmentDrives(response.data));
+      return response.data;
+    } catch (error) {
+      return Promise.reject(error);
+    } finally {
+      dispatch(hideGlobalLoader());
+    }
+  }
+);
+
+export const getRecruitmentDriveById = createAsyncThunk<
+  void,
+  {
+    id: string;
+  }
+>("recruitmentDrive/getRecruitmentDriveById", async (body, { dispatch }) => {
   try {
     dispatch(showGlobalLoader());
-    let query = "";
-    const { pagination } = (getState() as RootState).recruitmentDrive;
 
-    if (pagination) {
-      query += `page=${pagination.page}&limit=${pagination.limit}`;
-    }
-    const response = await axiosInstance.get(`recruitment-drive?${query}`, {
+    const response = await axiosInstance.get(`recruitment-drive/${body.id}`, {
       showSuccessToast: false,
     } as CustomAxiosRequestConfig);
-    dispatch(setRecruitmentDrives(response.data));
+
     return response.data;
   } catch (error) {
     return Promise.reject(error);
@@ -42,21 +64,38 @@ export const getRecruitmentDrives = createAsyncThunk<
   }
 });
 
-// export const addExpenseServer = createAsyncThunk<void, ExpenseFormData>(
-//   "expense/addExpenseServer",
-//   async (body, { dispatch }) => {
-//     dispatch(showGlobalLoader());
-//     try {
-//       const response = await axiosInstance.post("expenses", body);
-//       dispatch(addExpense(response.data.data));
-//       return response.data;
-//     } catch (error) {
-//       return Promise.reject(error);
-//     } finally {
-//       dispatch(hideGlobalLoader());
-//     }
-//   }
-// );
+export const createRecruitmentDrive = createAsyncThunk<
+  void,
+  RecruitmentDriveFormValues
+>("codingQuestion/createRecruitmentDrive", async (body, { dispatch }) => {
+  try {
+    dispatch(showGlobalLoader());
+    const response = await axiosInstance.post(`recruitment-drive`, body);
+    return response.data;
+  } catch (error) {
+    return Promise.reject(error);
+  } finally {
+    dispatch(hideGlobalLoader());
+  }
+});
+
+export const editRecruitmentDrive = createAsyncThunk<
+  void,
+  {
+    rd_id: string;
+    data: RecruitmentDriveFormValues
+  }
+>("codingQuestion/editRecruitmentDrive", async (body, { dispatch }) => {
+  try {
+    dispatch(showGlobalLoader());
+    const response = await axiosInstance.put(`recruitment-drive/${body.rd_id}`, body.data);
+    return response.data;
+  } catch (error) {
+    return Promise.reject(error);
+  } finally {
+    dispatch(hideGlobalLoader());
+  }
+});
 
 // export const editExpenseServer = createAsyncThunk<
 //   void,
@@ -131,5 +170,6 @@ const recruitmentDriveSlice = createSlice({
 });
 
 // Export actions and the reducer
-export const { setRecruitmentDrives, setRecruitmentDrivePagination } = recruitmentDriveSlice.actions;
+export const { setRecruitmentDrives, setRecruitmentDrivePagination } =
+  recruitmentDriveSlice.actions;
 export default recruitmentDriveSlice.reducer;
