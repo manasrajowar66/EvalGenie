@@ -5,7 +5,7 @@ export interface IPagination {
   page: number;
   total: number;
   totalPages?: number;
-};
+}
 
 export type IRecruitmentDrive = {
   id: string;
@@ -47,14 +47,14 @@ export type IBaseFunction = {
   question_id: string;
   language: string;
   base: string;
-}
+};
 
 export type ICodingTestCase = {
   id: string;
   input: string;
   expected_output: string;
   is_sample: boolean;
-}
+};
 
 export type ICodingQuestionFormData = {
   title: string;
@@ -65,21 +65,20 @@ export type ICodingQuestionFormData = {
   difficulty_level: DifficultyLevelEnum;
   constraints: string;
   tags: ITag[] | string[];
-}
+};
 
 export type ITag = {
   id: string;
   name: string;
   createdAt?: string;
   updatedAt?: string;
-}
-
+};
 
 export type ICodingQuestionTag = {
   id: string;
   name: string;
   cqt_id: string;
-}
+};
 
 export type ISubmission = {
   stdout: string;
@@ -90,8 +89,8 @@ export type ISubmission = {
   compile_output: string | null;
   message: string | null;
   status: {
-      id: number;
-      description: string;
+    id: number;
+    description: string;
   };
   stdin: string | null;
   expected_output: string | null;
@@ -108,6 +107,15 @@ export type ITest = {
   recruitment_drive_id: string;
   is_active: boolean;
   is_allow_registration: boolean;
-}
+};
 
 export type Role = "admin" | "student";
+
+export type IQuestionSection = {
+  id: string;
+  section_name: string;
+  is_negative_marks: boolean;
+  negative_marks: number | null;
+  marks_per_question: number;
+  question_list: ICodingQuestion[];
+};

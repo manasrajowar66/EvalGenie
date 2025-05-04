@@ -7,27 +7,30 @@ import {
   TextField,
 } from "@mui/material";
 import { CircleX } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   SectionFormValues,
   SectionSchema,
 } from "../../form-schema/section-schema";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { IQuestionSection } from "../../types/common-types";
 
 type Props = {
   onClose: () => void;
   onAdd: (data: SectionFormValues) => void;
+  defaultValues?: IQuestionSection;
 };
 
 const NewSectionForm: React.FC<Props> = (props) => {
-  const { onClose, onAdd } = props;
+  const { onClose, onAdd, defaultValues } = props;
 
   const {
     control,
     formState: { errors },
     watch,
     handleSubmit,
+    reset,
   } = useForm({
     resolver: yupResolver(SectionSchema),
     context: { validateQuestionList: false },
@@ -45,6 +48,18 @@ const NewSectionForm: React.FC<Props> = (props) => {
   const onSubmit = async (data: SectionFormValues) => {
     onAdd(data);
   };
+
+  useEffect(() => {
+    if (defaultValues) {
+      reset({
+        section_name: defaultValues.section_name,
+        question_list: defaultValues.question_list,
+        is_negative_marks: defaultValues.is_negative_marks,
+        negative_marks: defaultValues.negative_marks,
+        marks_per_question: defaultValues.marks_per_question
+      });
+    }
+  }, [reset, defaultValues]);
 
   return (
     <Dialog open={true} onClose={onClose} fullWidth maxWidth="md">

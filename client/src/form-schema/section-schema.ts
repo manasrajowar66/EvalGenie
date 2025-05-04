@@ -3,7 +3,7 @@ import * as Yup from "yup";
 export const SectionSchema = Yup.object().shape({
   section_name: Yup.string().trim().required("Section name is required"),
   question_list: Yup.array()
-    .of(Yup.string().uuid("Invalid question ID"))
+    .of(Yup.object())
     .when("$validateQuestionList", {
       is: true,
       then: (schema) => schema.min(1, "Must have at least one question"),
